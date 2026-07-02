@@ -346,21 +346,24 @@ def main():
     nyx_mode = bool(nyx_proxy)
 
     if args.headless and not os.environ.get("QWENCLOUD_HIDDEN"):
-        logger.info("headless requested → spawning Xvfb wrapper (run_hidden.sh)")
-        cmd = ["./run_hidden.sh", str(target)]
-        if args.resume:
-            cmd.append("--resume")
-        if args.threads > 1:
-            cmd.extend(["-t", str(args.threads)])
-        if args.censor:
-            cmd.append("-c")
-        if args.log:
-            cmd.append("--log")
-        if self_mode:
-            cmd.append("--self")
-        if nyx_mode:
-            cmd.extend(["--nyx", nyx_proxy])
-        os.execvp(cmd[0], cmd)
+        if sys.platform == "win32":
+            logger.warn("--headless (Xvfb wrapper) is only supported on Linux; ignoring")
+        else:
+            logger.info("headless requested → spawning Xvfb wrapper (run_hidden.sh)")
+            cmd = ["./run_hidden.sh", str(target)]
+            if args.resume:
+                cmd.append("--resume")
+            if args.threads > 1:
+                cmd.extend(["-t", str(args.threads)])
+            if args.censor:
+                cmd.append("-c")
+            if args.log:
+                cmd.append("--log")
+            if self_mode:
+                cmd.append("--self")
+            if nyx_mode:
+                cmd.extend(["--nyx", nyx_proxy])
+            os.execvp(cmd[0], cmd)
 
     headless = args.headless if not os.environ.get("QWENCLOUD_HIDDEN") else False
 
